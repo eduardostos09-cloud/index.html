@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Investiq App</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #0d1117;
+      color: white;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      background: #161b22;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    select {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #161b22;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      background: #21262d;
+    }
+
+    .buy { color: #00ff88; }
+    .neutral { color: #ffaa00; }
+    .sell { color: #ff4d4d; }
+
+    canvas {
+      margin-top: 30px;
+      background: white;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .premium {
+      margin-top: 20px;
+      padding: 15px;
+      background: #21262d;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #00ff88;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>📊 Investiq App</header>
+
+<div class="container">
+
+  <h3>Escolha o país</h3>
+  <select id="country" onchange="loadCompanies()">
+    <option value="br">Brasil</option>
+    <option value="us">EUA</option>
+  </select>
+
+  <div id="companies"></div>
+
+  <canvas id="chart" height="100"></canvas>
+
+  <div class="premium">
+    🔒 Quer ver análises completas?  
+    <br><br>
+    <button onclick="alert('Em breve versão premium')">
+      Desbloquear Premium
+    </button>
+  </div>
+
+</div>
+
+<script>
+const data = {
+  br: [
+    { name: "Petrobras", price: 36, trend: "buy" },
+    { name: "Vale", price: 68, trend: "neutral" },
+    { name: "Itaú", price: 32, trend: "sell" }
+  ],
+  us: [
+    { name: "Apple", price: 180, trend: "buy" },
+    { name: "Tesla", price: 250, trend: "neutral" },
+    { name: "Amazon", price: 140, trend: "sell" }
+  ]
+};
+
+function loadCompanies() {
+  const country = document.getElementById("country").value;
+  const container = document.getElementById("companies");
+  container.innerHTML = "";
+
+  data[country].forEach(company => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <strong>${company.name}</strong><br>
+      Preço: $${company.price}<br>
+      Recomendação: <span class="${company.trend}">
+        ${company.trend.toUpperCase()}
+      </span>
+    `;
+    div.onclick = () => drawChart(company.name);
+    container.appendChild(div);
+  });
+}
+
+let chart;
+
+function drawChart(name) {
+  const ctx = document.getElementById("chart");
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ["Jan", "Fev", "Mar", "Abr", "Mai"],
+      datasets: [{
+        label: name,
+        data: [
+          Math.random()*100,
+          Math.random()*100,
+          Math.random()*100,
+          Math.random()*100,
+          Math.random()*100
+        ]
+      }]
+    }
+  });
+}
+
+loadCompanies();
+</script>
+
+</body>
+</html>
