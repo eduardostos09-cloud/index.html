@@ -101,65 +101,59 @@
 </div>
 
 <script>
-const data = {
+const API_KEY = "I8W3AU3UFSHXL26A";
+
+const companies = {
   br: [
-    { name: "Petrobras", price: 36, trend: "buy" },
-    { name: "Vale", price: 68, trend: "neutral" },
-    { name: "Itaú", price: 32, trend: "sell" }
+    { name: "Petrobras", symbol: "PETR4.SA" },
+    { name: "Vale", symbol: "VALE3.SA" },
+    { name: "Itaú", symbol: "ITUB4.SA" }
   ],
   us: [
-    { name: "Apple", price: 180, trend: "buy" },
-    { name: "Tesla", price: 250, trend: "neutral" },
-    { name: "Amazon", price: 140, trend: "sell" }
+    { name: "Apple", symbol: "AAPL" },
+    { name: "Tesla", symbol: "TSLA" },
+    { name: "Amazon", symbol: "AMZN" }
   ]
 };
 
-function loadCompanies() {
-  const country = document.getElementById("country").value;
-  const container = document.getElementById("companies");
-  container.innerHTML = "";
+async function getStock(symbol) {
+  try {
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
 
-  data[country].forEach(company => {
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      <strong>${company.name}</strong><br>
-      Preço: $${company.price}<br>
-      Recomendação: <span class="${company.trend}">
-        ${company.trend.toUpperCase()}
-      </span>
-    `;
-    div.onclick = () => drawChart(company.name);
-    container.appendChild(div);
-  });
+    const price = data["Global Quote"]["05. price"];
+    return parseFloat(price).toFixed(2);
+  } catch {
+    return "Erro";
+  }
 }
 
-let chart;
+async function loadCompanies() {
+  const country = document.getElementById("country").value;
+  const container = document.getElementById("companies");
 
-function drawChart(name) {
-  const ctx = document.getElementById("chart");
+  container.innerHTML = "Carregando dados reais...";
 
-  if (chart) chart.destroy();
+  container.innerHTML = "";
 
-  chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ["Jan", "Fev", "Mar", "Abr", "Mai"],
-      datasets: [{
-        label: name,
-        data: [
-          Math.random()*100,
-          Math.random()*100,
-          Math.random()*100,
-          Math.random()*100,
-          Math.random()*100
-        ]
-      }]
-    }
-  });
+  for (let company of companies[country]) {
+    const price = await getStock(company.symbol);
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <strong>${company.name}</strong><br>
+      Preço: $${price}
+    `;
+
+    container.appendChild(div);
+  }
 }
 
 loadCompanies();
+</script>
 </script>
 
 </body>
