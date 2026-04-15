@@ -105,9 +105,10 @@ const API_KEY = "I8W3AU3UFSHXL26A";
 
 const companies = {
   br: [
-    { name: "Petrobras", symbol: "PETR4.SA" },
-    { name: "Vale", symbol: "VALE3.SA" },
-    { name: "Itaú", symbol: "ITUB4.SA" }
+  { name: "Petrobras", symbol: "PBR" },
+  { name: "Vale", symbol: "VALE" },
+  { name: "Itaú", symbol: "ITUB" }
+]
   ],
   us: [
     { name: "Apple", symbol: "AAPL" },
@@ -128,7 +129,9 @@ async function getStock(symbol) {
     return "Erro";
   }
 }
-
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 async function loadCompanies() {
   const country = document.getElementById("country").value;
   const container = document.getElementById("companies");
@@ -149,6 +152,7 @@ async function loadCompanies() {
     `;
 
     container.appendChild(div);
+    await sleep(1500);
   }
 }
 
