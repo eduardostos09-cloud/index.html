@@ -105,10 +105,9 @@ const API_KEY = "I8W3AU3UFSHXL26A";
 
 const companies = {
   br: [
-  { name: "Petrobras", symbol: "PBR" },
-  { name: "Vale", symbol: "VALE" },
-  { name: "Itaú", symbol: "ITUB" }
-]
+    { name: "Petrobras", symbol: "PBR" },
+    { name: "Vale", symbol: "VALE" },
+    { name: "Itaú", symbol: "ITUB" }
   ],
   us: [
     { name: "Apple", symbol: "AAPL" },
@@ -117,28 +116,31 @@ const companies = {
   ]
 };
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function getStock(symbol) {
   try {
     const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`;
     const response = await fetch(url);
     const data = await response.json();
 
-    const price = data["Global Quote"]["05. price"];
-    return parseFloat(price).toFixed(2);
-  } catch {
+    if (!data["Global Quote"] || !data["Global Quote"]["05. price"]) {
+      return "Erro";
+    }
+
+    return parseFloat(data["Global Quote"]["05. price"]).toFixed(2);
+  } catch (e) {
     return "Erro";
   }
 }
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+
 async function loadCompanies() {
   const country = document.getElementById("country").value;
   const container = document.getElementById("companies");
 
   container.innerHTML = "Carregando dados reais...";
-
-  container.innerHTML = "";
 
   for (let company of companies[country]) {
     const price = await getStock(company.symbol);
@@ -148,17 +150,14 @@ async function loadCompanies() {
 
     div.innerHTML = `
       <strong>${company.name}</strong><br>
-      Preço: $${price}
+      Preço: ${price}
     `;
 
     container.appendChild(div);
+
     await sleep(1500);
   }
 }
 
 loadCompanies();
 </script>
-</script>
-
-</body>
-</html>
