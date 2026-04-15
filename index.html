@@ -166,7 +166,11 @@ async function drawChart(symbol, name) {
     }
   });
 }
-async function getStock(symbol) {
+} catch (e) {
+    alert("Erro no gráfico");
+  }
+}
+  async function getStock(symbol) {
   try {
     const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`;
     const response = await fetch(url);
